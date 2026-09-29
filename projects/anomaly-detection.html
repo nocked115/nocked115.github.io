@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="의료영상 이상 탐지 — CAE 재구성 점수와 PaDiM 특징 거리를 검증셋 기준으로 융합. IEEE Sensors Journal 투고, 공동 제1저자." />
+  <title>의료영상 이상 탐지 — 이수현 포트폴리오</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="nav shell">
+    <a class="brand" href="../index.html">SUHYUN<span>.</span></a>
+    <a class="back" href="../index.html#work">← All work</a>
+  </header>
+
+  <main>
+    <section class="case-hero shell">
+      <p class="eyebrow">01 · RESEARCH · MEDICAL IMAGE ANOMALY DETECTION</p>
+      <h1>정상 영상만으로 학습해,<br>세 가지 의료 영상에서 <em>이상을 찾다</em></h1>
+      <p class="lede">Validation-Guided Reconstruction and Feature-Based Scoring for Medical Image Anomaly Detection — IEEE Sensors Journal(SCIE) 2026.09 투고, 심사 중. 6인 중 공동 제1저자(3인).</p>
+      <dl class="case-meta">
+        <div><dt>PERIOD</dt><dd>2026 상반기 – 2026.09</dd></div>
+        <div><dt>TEAM</dt><dd>6인 연구팀 · 공동 제1저자</dd></div>
+        <div><dt>MY ROLE</dt><dd>Liver CT 도메인 구현 전담 · 논문 취합 총괄 · 지도교수 Q&amp;A</dd></div>
+        <div><dt>STACK</dt><dd>Python · PyTorch · ResNet-18/34/50 · PaDiM · scikit-learn · Colab A100</dd></div>
+      </dl>
+    </section>
+
+    <div class="shell">
+      <div class="kpi-row">
+        <div class="kpi"><b>0.797 → 0.862</b><span>Brain MRI image AUROC</span></div>
+        <div class="kpi"><b>0.93 · 0.98 · 0.91</b><span>pixel AUROC — MRI · CT · OCT</span></div>
+        <div class="kpi"><b>0.63 – 0.83</b><span>Adaptive F1, 세 도메인 모두 Fixed · Quantile 상회</span></div>
+      </div>
+
+      <section class="case-section">
+        <h2>01 · Context<small>문제</small></h2>
+        <div class="case-body">
+          <p>비지도 의료영상 이상 탐지는 정상 데이터만으로 학습하고 비정상 영역을 찾습니다. 기존 Autoencoder 방식은 픽셀 단위 재구성 오차만 점수로 써서, 모양은 비슷하지만 의미가 다른 병변을 놓쳤습니다.</p>
+          <div class="table-wrap"><table>
+            <thead><tr><th>도메인</th><th>데이터셋 (BMAD)</th><th class="num">Train</th><th class="num">Val</th><th class="num">Test</th></tr></thead>
+            <tbody>
+              <tr><td>Brain MRI</td><td>BraTS2021</td><td class="num">7,500</td><td class="num">83</td><td class="num">3,715</td></tr>
+              <tr><td><b>Liver CT</b> <span class="todo" style="color:var(--violet-ink);background:var(--violet-soft)">내 담당</span></td><td>BTCV + LiTS</td><td class="num">1,542</td><td class="num">166</td><td class="num">1,493</td></tr>
+              <tr><td>Retinal OCT</td><td>RESC</td><td class="num">4,297</td><td class="num">115</td><td class="num">1,805</td></tr>
+            </tbody>
+          </table></div>
+        </div>
+      </section>
+
+      <section class="case-section">
+        <h2>02 · Approach<small>3단계 파이프라인</small></h2>
+        <div class="case-body">
+          <p>성격이 다른 두 점수를 합치고, 합치는 비율 α와 판정 임계값을 모두 검증셋으로 고릅니다.</p>
+          <div class="steps">
+            <div><b>STEP 1</b><h4>CAE 재구성</h4><p>정상 영상만으로 학습한 Convolutional AE의 픽셀 재구성 오차.</p><code>image score = spatial mean
+checkpoint = best val AUROC</code></div>
+            <div><b>STEP 2</b><h4>특징 거리 (PaDiM)</h4><p>ImageNet ResNet-18 layer1–3 특징의 위치별 가우시안과의 거리.</p><code>448ch → 100ch (random)
+Mahalanobis², Σ + 0.01·I</code></div>
+            <div><b>STEP 3</b><h4>융합 + 임계값</h4><p>두 점수를 검증셋 min-max로 정규화해 가중합, 임계값은 검증 F1 최대.</p><code>S = α·S′rec + (1−α)·S′feat
+α ∈ {0.0, 0.1, …, 1.0}</code></div>
+          </div>
+          <h3>내가 한 일</h3>
+          <ul class="bullets">
+            <li>Liver CT 전처리 파이프라인 (BTCV + LiTS, BMAD 공식 split), CAE 학습과 best checkpoint 선정</li>
+            <li>ResNet-18 PaDiM 특징 추출기 (layer1–3 concat, 차원 축소, squared Mahalanobis distance)</li>
+            <li>점수 융합 · α grid search · Adaptive / Fixed / Quantile 임계값 비교, Backbone 비교 (ResNet-34 · 50 · WideResNet-50)</li>
+            <li>지도교수 Q&amp;A 7건 답변, 논문–코드 불일치 4건 수정, Table · 초록 · 결론 수치 일관성 전수 확인</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="case-section">
+        <h2>03 · Result<small>결과</small></h2>
+        <div class="case-body">
+          <figure class="figure">
+            <svg viewBox="0 0 760 260" role="img" aria-label="Image-level AUROC, 재구성 단독에서 제안 방법으로: Brain MRI 0.7966에서 0.8620(+0.065), Liver CT 0.5859에서 0.5821(−0.004), Retinal OCT 0.7078에서 0.7422(+0.034)">
+              <g font-family="DM Mono" font-size="12" fill="#8a8a8a"><text x="24" y="30">IMAGE-LEVEL AUROC · 재구성 단독 ○ → 제안 방법 ●</text></g>
+              <g font-family="Noto Sans KR" font-size="15" font-weight="600" fill="#171717"><text x="24" y="82">Brain MRI</text><text x="24" y="142">Liver CT</text><text x="24" y="202">Retinal OCT</text></g>
+              <g font-family="DM Mono" font-size="11" fill="#8a8a8a"><text x="24" y="100">α* = 0.30</text><text x="24" y="160">α* = 0.90</text><text x="24" y="220">α* = 0.00</text></g>
+              <g stroke="#ddd9d1"><line x1="160" y1="86" x2="620" y2="86"/><line x1="160" y1="146" x2="620" y2="146"/><line x1="160" y1="206" x2="620" y2="206"/></g>
+              <line x1="501.1" y1="86" x2="576.3" y2="86" stroke="#5b45d6" stroke-width="5"/>
+              <line x1="254.4" y1="146" x2="258.8" y2="146" stroke="#b4532a" stroke-width="5"/>
+              <line x1="399.0" y1="206" x2="438.5" y2="206" stroke="#5b45d6" stroke-width="5"/>
+              <g fill="#fff" stroke="#9a9a9a" stroke-width="3"><circle cx="501.1" cy="86" r="8"/><circle cx="258.8" cy="146" r="8"/><circle cx="399.0" cy="206" r="8"/></g>
+              <circle cx="576.3" cy="86" r="8" fill="#5b45d6"/><circle cx="254.4" cy="146" r="8" fill="#b4532a"/><circle cx="438.5" cy="206" r="8" fill="#5b45d6"/>
+              <g font-family="DM Mono" font-size="17" font-weight="500"><text x="740" y="90" text-anchor="end" fill="#5b45d6">+0.065</text><text x="740" y="150" text-anchor="end" fill="#b4532a">−0.004</text><text x="740" y="210" text-anchor="end" fill="#5b45d6">+0.034</text></g>
+              <g font-family="DM Mono" font-size="11" fill="#8a8a8a"><text x="160" y="248">0.5</text><text x="275" y="248">0.6</text><text x="390" y="248">0.7</text><text x="505" y="248">0.8</text><text x="610" y="248">0.9</text></g>
+            </svg>
+            <figcaption>Brain MRI와 Retinal OCT에서 특징 점수 결합으로 image AUROC가 올랐다. 간 CT는 오히려 조금 떨어졌고, 이를 숨기지 않고 보고했다.</figcaption>
+          </figure>
+          <div class="cards">
+            <div><span class="tag">FINDING 01</span><h4>도메인마다 최적 α가 다르다</h4><p>α* = 0.30 / 0.90 / 0.00. 재구성과 특징 정보가 얼마나 쓸모 있는지는 영상 종류마다 다르다는 것을 수치로 보였다.</p></div>
+            <div><span class="tag">FINDING 02 · 내 담당</span><h4>간 CT의 병목은 모델 크기가 아니었다</h4><p>ResNet-34 · 50 · WideResNet-50으로 바꿔도 결과가 같았다. 원인은 ImageNet–CT 도메인 차이와 512 → 64 해상도 손실로 좁혀졌다.</p></div>
+            <div><span class="tag">FINDING 03</span><h4>임계값은 검증셋으로 고른다</h4><p>Fixed · Quantile은 점수 분포가 범위 밖이라 전부 정상으로 판정했다. Adaptive는 모든 도메인에서 안정적이었다.</p></div>
+            <div><span class="tag">BACKBONE · ADAPTIVE F1</span><h4>깊다고 좋아지지 않았다</h4><p>Brain MRI 0.826 / 0.875 / 0.787 (ResNet-18 / 34 / 50), Liver CT 0.634 / 0.624 / 0.626, Retinal OCT 0.691 / 0.694 / 0.694.</p></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="case-section">
+        <h2>04 · Troubleshooting<small>문제 → 조치 → 결과</small></h2>
+        <div class="case-body">
+          <div class="table-wrap"><table>
+            <thead><tr><th>문제</th><th>조치</th><th>결과</th></tr></thead>
+            <tbody>
+              <tr><td><b>데이터 누수</b><br>정규화에 test 자체의 min/max를 썼다</td><td>검증셋 min/max를 test에 고정 적용, 전량 재실험</td><td class="good">AUROC 변화 최대 0.0011 — 결과 유지, 방법론 바로잡음</td></tr>
+              <tr><td><b>임계값 기준 불일치</b><br>Liver CT만 검증셋 전체로 quantile 계산</td><td>세 도메인 모두 정상 샘플만 쓰도록 통일</td><td class="good">도메인 간 비교가 공정해짐</td></tr>
+              <tr><td><b>논문–코드 불일치</b><br>α 탐색 간격, sqrt 유무, 블록 수, checkpoint 기준</td><td>실제 코드를 기준으로 서술 4건 수정</td><td class="good">재현 가능한 논문</td></tr>
+              <tr><td><b>Pixel AUROC 0.02</b><br>mask를 64×64로 줄이며 작은 병변이 사라짐</td><td>원본 코드를 따라가 mask 처리와 비교 해상도 복원</td><td class="good">0.90 이상으로 회복</td></tr>
+            </tbody>
+          </table></div>
+        </div>
+      </section>
+
+      <section class="case-section">
+        <h2>05 · Learned<small>회고</small></h2>
+        <div class="case-body">
+          <div class="lessons">
+            <div><b>LESSON 01</b><p>잘 안 된 결과는 원인을 실험으로 좁혀 그대로 보고한다</p></div>
+            <div><b>LESSON 02</b><p>누수는 결과가 유지돼도 고친다 — 방법론이 결과보다 먼저다</p></div>
+            <div><b>LESSON 03</b><p>논문 · 코드 · 표의 숫자는 한 방향으로 맞춘다</p></div>
+          </div>
+          <p class="note" style="margin-top:20px">한계(본문에 자진 기재) — LiTS val/test가 같은 3D 볼륨 슬라이스를 공유해 환자 독립 분할이 아니고, ImageNet 사전학습 특징이 의료영상에 최적이 아닙니다. 심사 중이라 코드와 논문은 공개하지 않았습니다.</p>
+        </div>
+      </section>
+
+      <nav class="case-next" aria-label="다른 프로젝트">
+        <a href="../index.html#work"><small>← 전체</small>All work</a>
+        <a href="davi.html" style="text-align:right"><small>다음 →</small><span>02</span> 다비</a>
+      </nav>
+    </div>
+  </main>
+  <footer class="shell"><span>© 2026 SUHYUN LEE</span><a href="../index.html#contact">Contact ↗</a></footer>
+</body>
+</html>

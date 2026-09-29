@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="낚시성 기사 탐지 — KPF-BERT와 내부 일치도 피처, 직접 만든 테스트셋으로 패턴 암기를 진단." />
+  <title>낚시성 기사 탐지 — 이수현 포트폴리오</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="nav shell">
+    <a class="brand" href="../index.html">SUHYUN<span>.</span></a>
+    <a class="back" href="../index.html#work">← All work</a>
+  </header>
+
+  <main>
+    <section class="case-hero shell">
+      <p class="eyebrow">03 · NLP · CLICKBAIT / MISINFORMATION DETECTION</p>
+      <h1>F1 0.98은 탐지가 아니라 <em>암기</em>였다<br>— 직접 만든 테스트셋으로 확인하기까지</h1>
+      <p class="lede">내부 일치도 피처를 활용한 한국어 낚시성 기사 탐지. 모델 3종을 비교하고 피처로 성능을 올린 뒤, 여덟 번의 개선 시도가 실패한 이유를 “모델이 무엇을 배웠나”라는 질문으로 바꿔 진단했습니다.</p>
+      <dl class="case-meta">
+        <div><dt>PERIOD</dt><dd>2026 · 캡스톤 디자인</dd></div>
+        <div><dt>TEAM</dt><dd>2인 공동<br>한국멀티미디어학회 포스터 발표</dd></div>
+        <div><dt>MY ROLE</dt><dd>기획 · 모델링 · 실험 · 발표를 반반으로 함께</dd></div>
+        <div><dt>STACK</dt><dd>KoBERT · KLUE-RoBERTa · KPF-BERT · Sentence-BERT · PyTorch</dd></div>
+      </dl>
+    </section>
+
+    <div class="shell">
+      <div class="kpi-row">
+        <div class="kpi"><b>0.9815</b><span>part 1 F1 — 제목이 가짜인 기사</span></div>
+        <div class="kpi"><b>0.7601 → 0.7617</b><span>part 2 F1 — 주제 일관성 피처 추가</span></div>
+        <div class="kpi warn"><b>0.46 · 0.45</b><span>직접 만든 테스트셋 A · B의 F1</span></div>
+      </div>
+
+      <section class="case-section">
+        <h2>01 · Context<small>문제</small></h2>
+        <div class="case-body">
+          <p>제목과 본문이 어긋나는 낚시성 기사는 독자 오인을 부릅니다. 선행 연구(F1 88.6%)는 텍스트만 써서 판별 근거가 없었습니다. 우리는 KPF-BERT에 “내부 일치도”를 피처로 더해, 무엇 때문에 낚시성으로 판단했는지 설명할 수 있게 하려 했습니다.</p>
+          <div class="cards">
+            <div><span class="tag">PART 1 · 제목이 가짜</span><h4>낚시성 = 가짜 제목으로 교체</h4><p>AI Hub 낚시성 기사 291,466건 → 87,000건 샘플링 · val 36,434건</p></div>
+            <div><span class="tag">PART 2 · 본문에 이질 문장</span><h4>본문 10문장 중 1문장만 다른 주제</h4><p>295,275건 → 87,000건 샘플링 · val 36,910건</p></div>
+          </div>
+          <figure class="figure dark"><img src="../assets/clickbait-example.webp" alt="part 2 상 난이도 예시: 삼성전자 전시 기사 본문에 다른 맥락의 문장이 삽입되어 있다" width="973" height="258" loading="lazy"><figcaption>part 2 “상” 난이도 예시 — 같은 도메인 문장이 삽입돼 사람도 구분하기 어렵다.</figcaption></figure>
+        </div>
+      </section>
+
+      <section class="case-section">
+        <h2>02 · Approach<small>모델 비교와 피처</small></h2>
+        <div class="case-body">
+          <p>입력은 <code style="font-family:'DM Mono'">[CLS] 제목 [SEP] 본문</code>. 모델 3종을 먼저 비교하고, 가장 강한 KPF-BERT에 피처를 더해 Ablation으로 효과를 봤습니다(총 9개 실험).</p>
+          <figure class="figure">
+            <svg viewBox="0 0 760 300" role="img" aria-label="F1 모델 비교, 피처 없음. part 1: KoBERT 0.8129, KLUE-RoBERTa 0.9794, KPF-BERT 0.9815. part 2: KoBERT 0.6850, KLUE-RoBERTa 0.7475, KPF-BERT 0.7601">
+              <g font-family="DM Mono" font-size="11" fill="#8a8a8a"><text x="24" y="28">F1 · 모델 비교 (피처 없음)</text>
+                <text x="24" y="64">1.0</text><text x="24" y="114">0.9</text><text x="24" y="164">0.8</text><text x="24" y="214">0.7</text><text x="24" y="264">0.6</text></g>
+              <g stroke="#ddd9d1"><line x1="60" y1="60" x2="740" y2="60"/><line x1="60" y1="110" x2="740" y2="110"/><line x1="60" y1="160" x2="740" y2="160"/><line x1="60" y1="210" x2="740" y2="210"/></g>
+              <line x1="60" y1="260" x2="740" y2="260" stroke="#171717"/>
+              <!-- y = 260 - (v-0.6)*500 -->
+              <rect x="120" y="153.6" width="60" height="106.4" fill="#cfcac0"/><rect x="194" y="70.3" width="60" height="189.7" fill="#8b75ff"/><rect x="268" y="69.3" width="60" height="190.7" fill="#5b45d6"/>
+              <rect x="460" y="217.5" width="60" height="42.5" fill="#cfcac0"/><rect x="534" y="186.3" width="60" height="73.7" fill="#8b75ff"/><rect x="608" y="179.9" width="60" height="80.1" fill="#5b45d6"/>
+              <g font-family="DM Mono" font-size="12" fill="#555" text-anchor="middle">
+                <text x="150" y="146">.8129</text><text x="224" y="63">.9794</text><text x="298" y="62" fill="#5b45d6">.9815</text>
+                <text x="490" y="210">.6850</text><text x="564" y="179">.7475</text><text x="638" y="173" fill="#5b45d6">.7601</text>
+              </g>
+              <g font-family="Noto Sans KR" font-size="14" font-weight="600" fill="#171717" text-anchor="middle"><text x="224" y="284">part 1 · 제목이 가짜</text><text x="564" y="284">part 2 · 본문에 이질 문장</text></g>
+              <g font-family="DM Mono" font-size="11" fill="#555"><rect x="470" y="18" width="10" height="10" fill="#cfcac0"/><text x="486" y="27">KoBERT</text><rect x="548" y="18" width="10" height="10" fill="#8b75ff"/><text x="564" y="27">KLUE</text><rect x="610" y="18" width="10" height="10" fill="#5b45d6"/><text x="626" y="27">KPF-BERT</text></g>
+            </svg>
+            <figcaption>part 1은 모두 쉽게 풀지만, 10문장 중 1문장만 다른 part 2에서는 신호가 희석돼 0.76 부근에서 멈춘다.</figcaption>
+          </figure>
+          <div class="table-wrap"><table>
+            <thead><tr><th>part 2 · KPF-BERT</th><th>피처</th><th class="num">F1</th></tr></thead>
+            <tbody>
+              <tr><td>베이스라인</td><td>—</td><td class="num">0.7601</td></tr>
+              <tr><td>+ 주제 일관성 비율</td><td>낚시성 평균 0.81 vs 정상 1.0</td><td class="num good">0.7617</td></tr>
+              <tr><td>+ 주제 일관성 + 코사인 유사도</td><td>Sentence-BERT 제목–본문 유사도</td><td class="num bad">0.7518</td></tr>
+            </tbody>
+          </table></div>
+          <p class="note">처음 계획한 “제목 참조 문장 비율”은 정상 기사 라벨이 전부 N이라 값이 모두 0.0 → 변별력이 없어 폐기하고 코사인 유사도로 대체했습니다.</p>
+        </div>
+      </section>
+
+      <section class="case-section">
+        <h2>03 · Failure log<small>part 2 개선 시도 8건</small></h2>
+        <div class="case-body">
+          <div class="table-wrap"><table>
+            <thead><tr><th>#</th><th>시도</th><th>가설</th><th class="num">결과</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td><b>유사도 표준편차</b></td><td>이질 문장 1개면 문장–제목 유사도가 들쭉날쭉할 것</td><td class="num bad">차이 0.0015</td></tr>
+              <tr><td>2</td><td><b>본문 구조 분석</b></td><td>낚시성은 인접 문장 유사도 급락이 잦을 것</td><td class="num bad">정상이 오히려 높음</td></tr>
+              <tr><td>3</td><td><b>키워드 기반 피처</b></td><td>제목 키워드가 본문에 덜 나올 것</td><td class="num bad">차이 0.0005</td></tr>
+              <tr><td>4</td><td><b>앞/뒤 분리 입력</b></td><td>이질 문장 74%가 앞쪽, 44.9%가 512토큰 초과</td><td class="num bad">0.7554 → 0.7510</td></tr>
+              <tr><td>5</td><td><b>손실 가중치</b></td><td>탐지 쉬운 사례에 손실을 더 준다</td><td class="num bad">유의미한 향상 없음</td></tr>
+              <tr><td>6</td><td><b>문장 쌍 분류</b></td><td>두 문장이 자연스럽게 이어지는지 본다</td><td class="num bad">쌍 0.84 → 기사 0.34</td></tr>
+              <tr><td>7</td><td><b>하 난이도만 학습</b></td><td>중+상 난이도(27.6%)가 F1을 끌어내린다</td><td class="num bad">0.7634 → 0.7597</td></tr>
+              <tr><td>8</td><td><b>테스트셋 직접 제작</b></td><td>이질성이 강하면 잡을 것이다</td><td class="num">→ 아래 진단</td></tr>
+            </tbody>
+          </table></div>
+          <p class="note">실험마다 설정이 달라 베이스라인 F1이 0.7554 · 0.7601 · 0.7634로 조금씩 다릅니다. 각 행은 해당 실험의 베이스라인과 비교한 값입니다. 데이터 난이도: 알고리즘 자동 삽입 75% · 사람 삽입 16% · 같은 도메인 삽입 11%, 카테고리별 오분류율 46–52%.</p>
+        </div>
+      </section>
+
+      <section class="case-section">
+        <h2>04 · Diagnosis<small>모델이 배운 것</small></h2>
+        <div class="case-body">
+          <p>이질성의 세기를 달리한 테스트셋을 직접 만들었습니다. A는 연예 기사에 정치 문장(강한 이질성), B는 연예 기사에 다른 연예 문장(약한 이질성) — 각각 낚시성 1,500 + 정상 1,500건.</p>
+          <div class="kpi-row">
+            <div class="kpi"><b>0.7634</b><span>기존 검증셋 F1</span></div>
+            <div class="kpi warn"><b>0.4626</b><span>A · 강한 이질성 — recall 0.24 (1,142건 놓침)</span></div>
+            <div class="kpi warn"><b>0.4520</b><span>B · 약한 이질성 — recall 0.22</span></div>
+          </div>
+          <p><b>A ≈ B.</b> 이질성이 뚜렷해도 똑같이 실패했습니다. 모델은 이질 문장을 찾는 게 아니라 학습 데이터의 패턴을 외우고 있었습니다.</p>
+        </div>
+      </section>
+
+      <section class="case-section">
+        <h2>05 · Learned<small>회고와 다음 가설</small></h2>
+        <div class="case-body">
+          <div class="lessons">
+            <div><b>LESSON 01</b><p>높은 검증 점수는 과제를 풀었다는 증거가 아니다</p></div>
+            <div><b>LESSON 02</b><p>분포 밖 테스트셋을 따로 만들어야 모델이 배운 것을 안다</p></div>
+            <div><b>LESSON 03</b><p>변별력 없는 피처는 성능을 올리지 않고 노이즈가 된다</p></div>
+          </div>
+          <h3 style="margin-top:36px">다음 가설 <span class="todo" style="color:var(--muted);background:#ebe7df">아직 실험 전</span></h3>
+          <ul class="bullets">
+            <li>A/B처럼 분포 밖 사례를 학습에도 섞어, 패턴 대신 이질성 자체를 배우게 한다.</li>
+            <li>기사 단위 대신 문장 단위 이질성 라벨로 “어느 문장이 튀는지”를 직접 맞히게 한다.</li>
+            <li>카테고리별로 train/test를 나눠 암기 여부를 한 번 더 확인한다.</li>
+          </ul>
+        </div>
+      </section>
+
+      <nav class="case-next" aria-label="다른 프로젝트">
+        <a href="davi.html"><small>← 이전</small><span>02</span> 다비</a>
+        <a href="../index.html#other" style="text-align:right"><small>다음 →</small>그 밖의 작업</a>
+      </nav>
+    </div>
+  </main>
+  <footer class="shell"><span>© 2026 SUHYUN LEE</span><a href="../index.html#contact">Contact ↗</a></footer>
+</body>
+</html>

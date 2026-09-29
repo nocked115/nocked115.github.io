@@ -111,6 +111,7 @@ img { max-width: 100%; height: auto; display: block; }
 
 /* CONTACT */
 .contact { padding: 120px 0 140px; border-top: 1px solid var(--line); }
+.contact-mail span.arrow { color: var(--violet-ink); margin-left: 12px; }
 .contact-mail { display: inline-block; margin-top: 50px; font: 500 clamp(22px, 3vw, 40px) 'DM Mono'; border-bottom: 1px solid var(--ink); padding-bottom: 8px; }
 .contact-links { list-style: none; padding: 0; margin: 36px 0 0; display: flex; gap: 32px; flex-wrap: wrap; font: 500 15px 'DM Mono'; }
 .contact-links span { color: var(--violet-ink); }

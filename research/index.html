@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Suhyun Lee — Research</title>
+<meta name="description" content="Research by Suhyun Lee: what evidence a vision model actually uses, from medical anomaly detection and video detection to vision-language models.">
+<style>
+  :root {
+    --bg:#ffffff; --surface:#f6f9fb; --text:#1d2329; --muted:#5b6670; --line:#dde5ec;
+    --navy:#1F3442; --accent:#2F5D7E; --warm:#C2603A; --tag-bg:#EAF1F6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#12171c; --surface:#1a2128; --text:#e6ebef; --muted:#9aa7b2; --line:#2b353e;
+            --navy:#cfe0ec; --accent:#8fb8d6; --warm:#e38b66; --tag-bg:#22303b; }
+  }
+  * { box-sizing:border-box; }
+  html { -webkit-text-size-adjust:100%; }
+  body { margin:0; background:var(--bg); color:var(--text);
+         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", Arial, sans-serif;
+         font-size:16px; line-height:1.65; }
+  a { color:var(--accent); }
+  .wrap { max-width:860px; margin:0 auto; padding:0 20px; }
+  nav { display:flex; justify-content:space-between; align-items:center; padding:22px 0; font-size:14px; }
+  nav a { text-decoration:none; color:var(--muted); margin-left:18px; }
+  nav a:hover { color:var(--accent); }
+  nav .home { margin-left:0; font-weight:700; color:var(--text); }
+  header.hero { padding:40px 0 28px; border-bottom:1px solid var(--line); }
+  .eyebrow { font-size:13px; letter-spacing:.12em; text-transform:uppercase; color:var(--accent); font-weight:700; }
+  h1 { font-size:clamp(30px, 6vw, 44px); line-height:1.15; margin:10px 0 14px; color:var(--navy); }
+  .lead { font-size:18px; color:var(--text); max-width:680px; }
+  .meta { color:var(--muted); font-size:14px; margin-top:16px; }
+  .chips { display:flex; flex-wrap:wrap; gap:8px; margin-top:18px; }
+  .chip { background:var(--tag-bg); color:var(--accent); font-size:13px; font-weight:600; padding:4px 10px; border-radius:999px; }
+  section { padding:36px 0; border-bottom:1px solid var(--line); }
+  h2 { font-size:24px; color:var(--navy); margin:0 0 6px; line-height:1.3; }
+  .sub { color:var(--muted); font-size:14px; margin-bottom:16px; }
+  .badge { display:inline-block; font-size:12px; font-weight:700; color:#fff; background:var(--accent); border-radius:4px; padding:1px 7px; margin-left:6px; vertical-align:3px; }
+  .badge.warm { background:var(--warm); }
+  figure { margin:18px 0; background:#ffffff; border:1px solid var(--line); border-radius:10px; padding:14px; overflow-x:auto; }
+  figure svg { display:block; width:100%; min-width:520px; height:auto; }
+  figure svg text { font-family: Arial, Helvetica, sans-serif; }
+  figure.concept svg { min-width:0; }
+  figcaption { font-size:13px; color:#5b6670; margin-top:8px; }
+  h3 { font-size:15px; text-transform:uppercase; letter-spacing:.06em; color:var(--accent); margin:22px 0 8px; }
+  ul { padding-left:20px; margin:0; }
+  li { margin-bottom:6px; }
+  table { border-collapse:collapse; width:100%; font-size:15px; margin-top:4px; }
+  th, td { text-align:left; padding:8px 10px; border-bottom:1px solid var(--line); }
+  th { color:var(--navy); background:var(--surface); font-weight:700; }
+  td.num { text-align:right; font-variant-numeric:tabular-nums; font-weight:600; }
+  .findings { display:grid; gap:12px; margin-top:6px; }
+  .finding { background:var(--surface); border-left:3px solid var(--accent); border-radius:6px; padding:12px 14px; }
+  .finding b { color:var(--navy); }
+  .finding em { color:var(--muted); }
+  .stats { display:grid; grid-template-columns:repeat(3, 1fr); gap:12px; margin:14px 0 6px; }
+  .stat { background:var(--surface); border-radius:8px; padding:12px; text-align:center; }
+  .stat .v { font-size:24px; font-weight:800; color:var(--navy); }
+  .stat .l { font-size:13px; color:var(--muted); }
+  .question { background:var(--surface); border-radius:10px; padding:18px 20px; font-size:17px; }
+  .question b { color:var(--navy); }
+  .dim { color:var(--muted); font-size:13px; }
+  .note { color:var(--muted); font-size:13px; margin:8px 0 0; }
+  .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:24px; }
+  footer { padding:30px 0 50px; color:var(--muted); font-size:14px; }
+  footer a { margin-right:16px; }
+  @media (max-width:640px) {
+    .grid2 { grid-template-columns:1fr; gap:8px; }
+    .stats { grid-template-columns:1fr; }
+    nav a { margin-left:12px; }
+    .lead { font-size:17px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav>
+    <a class="home" href="/">Suhyun Lee</a>
+    <div>
+      <a href="#projects">Projects</a>
+      <a href="#direction">Direction</a>
+      <a href="https://github.com/nocked115">GitHub</a>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="eyebrow">Research</div>
+    <h1>What evidence does a model actually use?</h1>
+    <p class="lead">I'm Suhyun Lee, a senior in Data Science at Dongduk Women's University. When a vision model gets a good score, I want to know whether it used the right evidence, and whether our evaluation actually checks that. I first met this question in medical anomaly detection, carried it into video detection, and now study it in vision-language models.</p>
+    <div class="meta">B.S. Data Science, Dongduk Women's University (expected Feb 2027) · Prospective M.S. applicant, Fall 2027</div>
+    <div class="chips">
+      <span class="chip">Vision-Language Models</span>
+      <span class="chip">Efficient Multimodal Learning</span>
+      <span class="chip">Video Understanding</span>
+      <span class="chip">Robustness &amp; Reliable Evaluation</span>
+    </div>
+  </header>
+
+  <section id="projects">
+    <h2>Unsupervised Medical Image Anomaly Detection</h2>
+    <div class="sub">Mar – Sep 2026 · Undergraduate researcher, Dongduk Women's University · Co-first author (one of three, six-author team) · Led the liver CT track · Rejected at IEEE Sensors Journal; preparing resubmission</div>
+
+    <figure>
+      <svg viewBox="0 0 720 118" role="img" aria-label="Pipeline: normal-only training; reconstruction branch with convolutional autoencoder and feature branch with PaDiM, fused by a validation-tuned weight">
+      <defs><marker id="a1" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#2F5D7E"/></marker></defs>
+      <rect x="4" y="38" width="108" height="42" rx="5" fill="#EAF1F6" stroke="#2F5D7E"/>
+      <text x="58" y="56" text-anchor="middle" font-size="11" font-weight="bold" fill="#1F3442">CT slice</text>
+      <text x="58" y="71" text-anchor="middle" font-size="9" fill="#444">64×64, normal only</text>
+      <line x1="112" y1="52" x2="168" y2="25" stroke="#2F5D7E" stroke-width="1.5" marker-end="url(#a1)"/>
+      <line x1="112" y1="66" x2="168" y2="93" stroke="#2F5D7E" stroke-width="1.5" marker-end="url(#a1)"/>
+      <rect x="172" y="4" width="190" height="42" rx="5" fill="#fff" stroke="#2F5D7E"/>
+      <text x="267" y="22" text-anchor="middle" font-size="11" font-weight="bold" fill="#1F3442">Reconstruction branch</text>
+      <text x="267" y="37" text-anchor="middle" font-size="9.5" fill="#444">Conv. autoencoder → recon. error</text>
+      <rect x="172" y="72" width="190" height="42" rx="5" fill="#fff" stroke="#2F5D7E"/>
+      <text x="267" y="90" text-anchor="middle" font-size="11" font-weight="bold" fill="#1F3442">Feature branch (PaDiM)</text>
+      <text x="267" y="105" text-anchor="middle" font-size="9.5" fill="#444">ResNet features → Mahalanobis dist.</text>
+      <line x1="362" y1="25" x2="420" y2="52" stroke="#2F5D7E" stroke-width="1.5" marker-end="url(#a1)"/>
+      <line x1="362" y1="93" x2="420" y2="66" stroke="#2F5D7E" stroke-width="1.5" marker-end="url(#a1)"/>
+      <rect x="424" y="34" width="140" height="50" rx="5" fill="#EAF1F6" stroke="#2F5D7E"/>
+      <text x="494" y="54" text-anchor="middle" font-size="11" font-weight="bold" fill="#1F3442">Score fusion</text>
+      <text x="494" y="69" text-anchor="middle" font-size="9.5" fill="#444">weight α tuned on validation</text>
+      <line x1="564" y1="59" x2="604" y2="59" stroke="#2F5D7E" stroke-width="1.5" marker-end="url(#a1)"/>
+      <rect x="608" y="34" width="108" height="50" rx="5" fill="#fff" stroke="#2F5D7E"/>
+      <text x="662" y="54" text-anchor="middle" font-size="11" font-weight="bold" fill="#1F3442">Image score</text>
+      <text x="662" y="69" text-anchor="middle" font-size="9.5" fill="#444">+ adaptive threshold</text>
+    </svg>
+      <figcaption>Normal-only training: a reconstruction branch and a feature branch, fused by a weight tuned on validation data.</figcaption>
+    </figure>
+
+    <div class="grid2">
+      <div>
+        <h3>My contribution</h3>
+        <ul>
+          <li>Owned the liver CT domain end to end: preprocessing (BTCV + LiTS), convolutional autoencoder, and PaDiM with position-wise Gaussian modeling.</li>
+          <li>Implemented validation-guided score fusion and compared adaptive, fixed and quantile thresholds.</li>
+          <li>Compared ResNet-18/34/50 and WideResNet-50 backbones.</li>
+          <li>Selected checkpoints by validation image AUROC, never by test results.</li>
+          <li>Merged the three domains into one manuscript and handled Q&amp;A with the advising professor.</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Results (image AUROC)</h3>
+        <table>
+          <tr><th>Modality</th><th style="text-align:right">Recon. only</th><th style="text-align:right">Fused</th><th style="text-align:right">α*</th></tr>
+          <tr><td>Brain MRI <span class="dim">BraTS2021</span></td><td class="num">0.797</td><td class="num">0.862</td><td class="num">0.30</td></tr>
+          <tr><td>Retinal OCT <span class="dim">RESC</span></td><td class="num">0.708</td><td class="num">0.742</td><td class="num">0.00</td></tr>
+          <tr><td>Liver CT <span class="dim">BTCV + LiTS · my track</span></td><td class="num">0.586</td><td class="num">0.582</td><td class="num">0.90</td></tr>
+        </table>
+        <p class="note">Fusion helped on MRI and OCT and slightly hurt on liver CT. Pixel AUROC 0.93 / 0.91 / 0.98 (MRI / OCT / CT).</p>
+      </div>
+    </div>
+
+    <h3>What I found</h3>
+    <div class="findings">
+      <div class="finding"><b>Test-set leakage in score normalization.</b> Scores were min–max normalized with the test set's own statistics. I found it, proposed fixing all three domains to validation-set statistics, and we reran every experiment. AUROC moved by at most 0.0011, so the conclusions held, but now they were earned. <em>A good score does not prove a fair evaluation.</em></div>
+      <div class="finding"><b>Lesions lost by downsampling.</b> Pixel AUROC on liver CT came out at 0.02. Tracing the code showed small lesions vanishing when masks were shrunk to 64×64, so the ground truth no longer matched the image. Restoring the mask handling brought it back above 0.90. <em>What survives preprocessing decides what can be evaluated at all.</em></div>
+      <div class="finding"><b>Fusion did not beat reconstruction-only on liver CT.</b> The tuned weight leaned almost entirely toward reconstruction (α* = 0.90), so ImageNet features added little there. We reported the drop rather than hiding it, and listed resolution loss, domain mismatch and LiTS slices that share 3D volumes across validation and test as limitations.</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Pre-Exposure Intervention for Sensitive Video Content <span class="badge">ACK 2026</span></h2>
+    <div class="sub">2026 · Two-student project (ScareBlock) · I owned the detection models, dataset and evaluation · Presented at ACK 2026, KIPS Fall Conference · <a href="../papers/ACK2026_PreExposure_Intervention.pdf">Paper (Korean)</a> · <a href="https://github.com/scareblock/scareblock">Code</a></div>
+
+    <figure>
+      <svg viewBox="0 0 720 96" role="img" aria-label="Pipeline: video stream, delay buffer, video and audio detectors, intervention decision, then display">
+      <defs><marker id="a2" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#2F5D7E"/></marker></defs>
+      <rect x="4" y="27" width="100" height="42" rx="5" fill="#EAF1F6" stroke="#2F5D7E"/>
+      <text x="54" y="45" text-anchor="middle" font-size="11" font-weight="bold" fill="#1F3442">Video stream</text>
+      <text x="54" y="60" text-anchor="middle" font-size="9.5" fill="#444">e.g. YouTube</text>
+      <line x1="104" y1="48" x2="136" y2="48" stroke="#2F5D7E" stroke-width="1.5" marker-end="url(#a2)"/>
+      <rect x="140" y="27" width="118" height="42" rx="5" fill="#fff" stroke="#2F5D7E"/>
+      <text x="199" y="45" text-anchor="middle" font-size="11" font-weight="bold" fill="#1F3442">Delay buffer</text>
+      <text x="199" y="60" text-anchor="middle" font-size="9.5" fill="#444">a few seconds ahead</text>
+      <line x1="258" y1="40" x2="300" y2="20" stroke="#2F5D7E" stroke-width="1.5" marker-end="url(#a2)"/>
+      <line x1="258" y1="56" x2="300" y2="76" stroke="#2F5D7E" stroke-width="1.5" marker-end="url(#a2)"/>
+      <rect x="304" y="2" width="150" height="36" rx="5" fill="#fff" stroke="#2F5D7E"/>
+      <text x="379" y="24" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#1F3442">Visual scene detector</text>
+      <rect x="304" y="58" width="150" height="36" rx="5" fill="#fff" stroke="#2F5D7E"/>
+      <text x="379" y="74" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#1F3442">Audio detector</text>
+      <text x="379" y="87" text-anchor="middle" font-size="9" fill="#444">rejects speech segments</text>
+      <line x1="454" y1="20" x2="494" y2="40" stroke="#2F5D7E" stroke-width="1.5" marker-end="url(#a2)"/>
+      <line x1="454" y1="76" x2="494" y2="56" stroke="#2F5D7E" stroke-width="1.5" marker-end="url(#a2)"/>
+      <rect x="498" y="27" width="104" height="42" rx="5" fill="#EAF1F6" stroke="#2F5D7E"/>
+      <text x="550" y="45" text-anchor="middle" font-size="11" font-weight="bold" fill="#1F3442">Decision</text>
+      <text x="550" y="60" text-anchor="middle" font-size="9.5" fill="#444">mask / skip</text>
+      <line x1="602" y1="48" x2="630" y2="48" stroke="#2F5D7E" stroke-width="1.5" marker-end="url(#a2)"/>
+      <rect x="634" y="27" width="82" height="42" rx="5" fill="#fff" stroke="#2F5D7E"/>
+      <text x="675" y="45" text-anchor="middle" font-size="11" font-weight="bold" fill="#1F3442">Viewer</text>
+      <text x="675" y="60" text-anchor="middle" font-size="9.5" fill="#444">sees it safely</text>
+    </svg>
+      <figcaption>Video plays with a short delay; scenes are detected on the undelayed signal and blurred or muted before the viewer sees them.</figcaption>
+    </figure>
+
+    <div class="stats">
+      <div class="stat"><div class="v">0.133 s</div><div class="l">p90 detection latency, 76 jump scares in 41 clips</div></div>
+      <div class="stat"><div class="v">35%</div><div class="l">recall; 93% of alarms were false</div></div>
+      <div class="stat"><div class="v">−63%</div><div class="l">test-set false positives after rejecting speech</div></div>
+    </div>
+    <h3>What I found</h3>
+    <div class="findings">
+      <div class="finding"><b>Timing is part of correctness.</b> A detector that fires after the scene is shown has failed, however accurate it is. So I measured latency against human-marked onsets: p90 0.133 s, well inside a 3-second buffer that ran at 720p without dropped frames.</div>
+      <div class="finding"><b>Speed was solved; evidence was not.</b> The audio detector caught 35% of jump scares, and 93% of its alarms were false. On 24 ordinary videos it fired 122 times an hour, the same rate as on horror clips, so its alarms were not tracking scares. Rejecting speech segments cut test-set false positives by 63%. <em>A fast detector can still be listening to the wrong thing.</em></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>What Must Survive: Skeleton-Preserving Visual Token Reduction <span class="badge warm">In preparation</span></h2>
+    <div class="sub">Nov 2026 – · Study club team project · I proposed the topic, which was selected as the club's project</div>
+    <div class="grid2">
+      <div>
+        <ul>
+          <li><b>Question:</b> if a VLM keeps only the visual tokens around a person's skeleton, can it still understand what the person is doing?</li>
+          <li><b>Interesting failure cases:</b> drinking water and answering a phone have almost the same skeleton motion; the object in the hand decides. Running means something different on a track and on a road.</li>
+          <li><b>Goal:</b> find which actions the skeleton alone explains, and which object or scene tokens must also survive.</li>
+        </ul>
+      </div>
+      <figure class="concept" style="margin:0">
+        <svg viewBox="0 0 330 112" role="img" aria-label="Concept: all visual tokens, skeleton-region tokens only, skeleton plus key object tokens">
+        <g font-size="9.5" fill="#1F3442" text-anchor="middle">
+          <text x="52" y="12" font-weight="bold">All tokens</text>
+          <text x="165" y="12" font-weight="bold">Skeleton only</text>
+          <text x="278" y="12" font-weight="bold">Skeleton + object</text>
+        </g>
+        <g id="gridA">
+          <rect x="12" y="20" width="80" height="80" fill="#2F5D7E" opacity=".75"/>
+        </g>
+        <rect x="125" y="20" width="80" height="80" fill="#EAF1F6" stroke="#C9D7E2"/>
+        <rect x="238" y="20" width="80" height="80" fill="#EAF1F6" stroke="#C9D7E2"/>
+        <g stroke="#fff" stroke-width=".6">
+          <path d="M12 36h80M12 52h80M12 68h80M12 84h80M28 20v80M44 20v80M60 20v80M76 20v80"/>
+        </g>
+        <!-- skeleton-region tokens -->
+        <g fill="#2F5D7E" opacity=".75">
+          <rect x="157" y="20" width="16" height="16"/><rect x="157" y="36" width="16" height="16"/><rect x="141" y="36" width="16" height="16"/><rect x="173" y="36" width="16" height="16"/>
+          <rect x="157" y="52" width="16" height="16"/><rect x="141" y="68" width="16" height="16"/><rect x="173" y="68" width="16" height="16"/><rect x="141" y="84" width="16" height="16"/><rect x="173" y="84" width="16" height="16"/>
+          <rect x="270" y="20" width="16" height="16"/><rect x="270" y="36" width="16" height="16"/><rect x="254" y="36" width="16" height="16"/><rect x="286" y="36" width="16" height="16"/>
+          <rect x="270" y="52" width="16" height="16"/><rect x="254" y="68" width="16" height="16"/><rect x="286" y="68" width="16" height="16"/><rect x="254" y="84" width="16" height="16"/><rect x="286" y="84" width="16" height="16"/>
+        </g>
+        <rect x="302" y="20" width="16" height="16" fill="#C2603A" opacity=".85"/>
+        <g stroke="#1F3442" stroke-width="1.6" fill="none">
+          <circle cx="165" cy="28" r="4"/><path d="M165 32v24M149 44h32M165 56l-16 36M165 56l16 36"/>
+          <circle cx="278" cy="28" r="4"/><path d="M278 32v24M262 44h32M294 44l16-16M278 56l-16 36M278 56l16 36"/>
+        </g>
+        <text x="165" y="110" font-size="8.5" fill="#5a5a5a" text-anchor="middle">fewer tokens</text>
+        <text x="278" y="110" font-size="8.5" fill="#C2603A" text-anchor="middle">+ cup or phone?</text>
+      </svg>
+        <figcaption>Concept: all tokens, skeleton-region tokens only, and skeleton plus a key object token.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section>
+    <h2>Other work</h2>
+    <ul>
+      <li><b>VLM paper study.</b> Presented GLIP and Grounding DINO, comparing how they ground language in images; studied CLIP-style image–text contrastive learning.</li>
+      <li><b>Departure alert from driving video</b> (OpenCV, SKT FLY AI, one-day team project). Motion and traffic-light cues; tested on day and night video.</li>
+      <li><b>Clickbait news detection</b> (poster, Korea Multimedia Society 2026 · <a href="../papers/KMMS2026_Clickbait_KPF-BERT.pdf">paper</a>). Validation F1 was 0.98, but on a test set I built myself it fell to 0.46: the model had memorized patterns, not checked headline–article consistency. Consistency features brought the harder split to F1 0.7617.</li>
+    </ul>
+  </section>
+
+  <section id="direction">
+    <h2>Research direction</h2>
+    <div class="question">
+      <ul>
+        <li><b>Reliable visual perception:</b> models that keep deciding correctly when the input changes (resolution, domain, lighting), and evaluation that checks whether they decided for the right reasons.</li>
+        <li><b>What must survive:</b> which visual information a model truly needs, so vision-language models can be made efficient without losing the evidence behind their decisions.</li>
+        <li><b>Long term:</b> perception for autonomous driving and robots, where a model that is right for the wrong reason can be dangerous.</li>
+      </ul>
+    </div>
+  </section>
+
+  <footer>
+    <a href="https://github.com/nocked115">GitHub</a>
+    <a href="/">Main portfolio</a>
+    <div style="margin-top:10px">Some code is tied to collaborative work or a manuscript in preparation and is available on request.</div>
+  </footer>
+</div>
+</body>
+</html>

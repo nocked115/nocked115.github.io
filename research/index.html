@@ -83,9 +83,70 @@
     header.hero { padding-top:42px; }
     section { padding:42px 0 46px; }
   }
+
+  /* Research page visual system: quiet paper, strong project rhythm. */
+  body.research-page { background:#f3f1ed; }
+  body.research-page .wrap { max-width:1080px; padding:0 40px; }
+  body.research-page nav { border-bottom:0; color:#fff; }
+  body.research-page nav a,
+  body.research-page nav .home { color:#fff; }
+  body.research-page nav a:hover { color:#c9ddea; }
+  body.research-page header.hero {
+    margin:0 -40px;
+    padding:88px 40px 76px;
+    background:#183344;
+    border:0;
+    color:#fff;
+  }
+  body.research-page .eyebrow { color:#a9c7d8; }
+  body.research-page h1 { max-width:760px; font-size:clamp(42px, 7vw, 76px); letter-spacing:-.055em; color:#fff; }
+  body.research-page .lead { max-width:760px; color:#eaf1f5; font-size:19px; }
+  body.research-page .meta { color:#b9cbd5; }
+  body.research-page .chips { color:#d9e8ef; }
+  body.research-page .chip:not(:last-child)::after { color:#6d8998; }
+  body.research-page section {
+    margin:0 -40px;
+    padding:76px 40px 82px;
+    background:#fff;
+    border-bottom:1px solid #d5d9da;
+  }
+  body.research-page section:nth-of-type(even) { background:#f8f7f4; }
+  body.research-page section:first-of-type { padding-top:70px; }
+  body.research-page section > h2 { max-width:880px; font-size:clamp(28px, 3.4vw, 42px); padding-left:20px; border-left:5px solid #2f5d7e; }
+  body.research-page section > h2::before { margin-bottom:16px; font-size:12px; }
+  body.research-page .sub { max-width:860px; margin:0 0 34px 25px; font-size:14px; }
+  body.research-page figure { border:1px solid #cbd4d8; border-radius:0; padding:22px; margin:30px 0 40px; }
+  body.research-page figure svg { min-width:640px; }
+  body.research-page .grid2 { gap:48px; }
+  body.research-page h3 { margin-top:34px; color:#183344; }
+  body.research-page .findings { margin-top:10px; }
+  body.research-page .finding { padding:20px 0; }
+  body.research-page .stats { gap:28px; margin:28px 0 12px; }
+  body.research-page .stat .v { font-size:30px; }
+  body.research-page #direction { background:#183344; color:#eaf1f5; border-bottom:0; }
+  body.research-page #direction > h2 { color:#fff; border-color:#a9c7d8; }
+  body.research-page #direction > h2::before { color:#a9c7d8; }
+  body.research-page #direction .question { border-color:#a9c7d8; }
+  body.research-page #direction .question b { color:#fff; }
+  body.research-page footer { margin:0 -40px; padding:38px 40px 56px; background:#183344; color:#b9cbd5; }
+  body.research-page footer a { color:#fff; }
+  @media (max-width:640px) {
+    body.research-page .wrap { padding:0 20px; }
+    body.research-page header.hero,
+    body.research-page section,
+    body.research-page footer { margin-left:-20px; margin-right:-20px; padding-left:20px; padding-right:20px; }
+    body.research-page header.hero { padding-top:58px; padding-bottom:54px; }
+    body.research-page h1 { font-size:clamp(38px, 12vw, 58px); }
+    body.research-page .lead { font-size:17px; }
+    body.research-page section { padding-top:52px; padding-bottom:58px; }
+    body.research-page section > h2 { padding-left:14px; border-left-width:4px; }
+    body.research-page .sub { margin-left:18px; }
+    body.research-page figure { margin-left:0; margin-right:0; padding:12px; }
+    body.research-page figure svg { min-width:560px; }
+  }
 </style>
 </head>
-<body>
+<body class="research-page">
 <div class="wrap">
   <nav>
     <a class="home" href="/">Suhyun Lee</a>
